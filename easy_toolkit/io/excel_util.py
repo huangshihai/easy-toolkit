@@ -6,7 +6,7 @@ import pandas as pd
 logger = logging.getLogger()
 
 
-def read(data_path: str, result_file: str, origin_file: str, initializer) -> list[dict]:
+def read(data_path: str, origin_file: str, result_file: str, initializer) -> list[dict]:
     result_path = os.path.join(data_path, result_file)
     if os.path.exists(result_path):
         logger.info(f"检测到 {result_file} 文件，从恢复点加载...")
