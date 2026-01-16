@@ -6,7 +6,7 @@ import pandas as pd
 logger = logging.getLogger()
 
 
-def load_data(data_path: str, result_file: str, origin_file: str, initializer) -> list[dict]:
+def read(data_path: str, result_file: str, origin_file: str, initializer) -> list[dict]:
     result_path = os.path.join(data_path, result_file)
     if os.path.exists(result_path):
         logger.info(f"检测到 {result_file} 文件，从恢复点加载...")
@@ -18,7 +18,7 @@ def load_data(data_path: str, result_file: str, origin_file: str, initializer) -
     return initializer(df)
 
 
-def save_data(data: list[dict], data_path: str, result_file: str, use_temp: bool = True) -> None:
+def write(data: list[dict], data_path: str, result_file: str, use_temp: bool = True) -> None:
     df = pd.DataFrame(data)
     result_path = os.path.join(data_path, result_file)
     # 确保目标文件的父目录存在
