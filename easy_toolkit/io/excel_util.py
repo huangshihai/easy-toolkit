@@ -20,9 +20,7 @@ def load_data(data_path: str, result_file: str, origin_file: str, initializer) -
 
 def save_data(data: list[dict], data_path: str, result_file: str, use_temp: bool = True) -> None:
     df = pd.DataFrame(data)
-    # 直接使用输入的 Path 对象，并解析为绝对路径以确保一致性
     result_path = os.path.join(data_path, result_file)
-
     # 确保目标文件的父目录存在
     os.makedirs(os.path.dirname(data_path), exist_ok=True)
     if use_temp:
@@ -34,7 +32,6 @@ def save_data(data: list[dict], data_path: str, result_file: str, use_temp: bool
             os.replace(temp_path, result_path)
         except Exception as e:
             logger.warning(f"写入数据到 {result_path} 失败: {e}")
-            # 清理临时文件，使用 Path 对象的 exists() 和 unlink()
             if os.path.exists(temp_file):
                 try:
                     os.unlink(temp_file)  # 删除文件
