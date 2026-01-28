@@ -40,20 +40,26 @@ class PlaywrightAsyncProcessor:
             trace_id = uuid.uuid4().hex
             token = trace_id_var.set(trace_id)
             logger = logging.getLogger()
-            proxy_state = self.proxy_pool.acquire()
+            proxy_state = None
+            if self.proxy_pool is not None:
+                proxy_state = self.proxy_pool.acquire()
             async with self._semaphore:
-                proxy = proxy_state.playwright_http_proxy()
+                proxy = None
+                if proxy_state is not None:
+                    proxy = proxy_state.playwright_http_proxy()
                 context = await self._browser.new_context(
                     proxy=proxy if proxy else None
                 )
                 try:
                     logger.info(f"任务开始: {task_func.__name__}  args={args} kwargs={kwargs}")
                     result = await task_func(context, *args, **kwargs)
-                    self.proxy_pool.report_success(proxy_state)
+                    if self.proxy_pool is not None:
+                        self.proxy_pool.report_success(proxy_state)
                     logger.info(f"任务完成: {task_func.__name__} 返回值={result}")
                     return result
                 except Exception as e:
-                    self.proxy_pool.report_failure(proxy_state)
+                    if self.proxy_pool is not None:
+                        self.proxy_pool.report_failure(proxy_state)
                     logger.exception(f"任务异常: {task_func.__name__} 异常={e}")
                     raise
                 finally:
